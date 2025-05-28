@@ -1,0 +1,522 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+    padding: 0 15px;
+    background-color: #f4f4f9;
+    color: #333;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+h1 {
+    margin-bottom: 15px;
+    font-size: 2.2em;
+    color: #2c3e50;
+    text-align: center;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+    padding: 0 15px;
+    background-color: #f4f4f9;
+    color: #333;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scroll from animations */
+}
+
+h1 { /* ... (no change) ... */ }
+#toggle-config-button { /* ... (no change) ... */ }
+.player-setup-container { /* ... (no change) ... */ }
+.player-setup-container.collapsed { /* ... (no change) ... */ }
+.player-setup { /* ... (no change) ... */ }
+.player-setup h2 { /* ... (no change) ... */ }
+.player-name-input { /* ... (no change) ... */ }
+.player-setup .image-controls,
+.player-setup .sound-controls { /* ... (no change, label for sound updated in HTML) ... */ }
+.player-setup label { /* ... (no change) ... */ }
+.image-controls .image-input-options { /* ... (no change) ... */ }
+.image-input-options .image-input { /* ... (no change) ... */ }
+.image-input-options span { /* ... (no change) ... */ }
+.image-input-options .take-photo-btn { /* ... (no change) ... */ }
+.record-button, .stop-record-button { /* ... (no change) ... */ }
+.preview-img { /* ... (no change) ... */ }
+.preview-img[src=""], .preview-img:not([src]) { /* ... (no change) ... */ }
+.record-status { /* ... (no change) ... */ }
+.playback-audio { /* ... (no change) ... */ }
+.playback-audio:not([src]) { /* ... (no change) ... */ }
+.modal { /* ... (no change) ... */ }
+.modal-content { /* ... (no change) ... */ }
+.close-camera-btn { /* ... (no change) ... */ }
+#camera-video-stream { /* ... (no change) ... */ }
+#capture-image-btn { /* ... (no change) ... */ }
+.camera-error-msg { /* ... (no change) ... */ }
+#main-game-layout { /* ... (no change) ... */ }
+#game-area { /* ... (no change) ... */ }
+#status-message { /* ... (no change) ... */ }
+#game-board { /* ... (no change) ... */ }
+.cell { /* ... (no change) ... */ }
+.cell img { /* ... (no change) ... */ }
+#reset-button { /* ... (no change) ... */ }
+#scoreboard-area { /* ... (no change) ... */ }
+#scoreboard-area h3 { /* ... (no change) ... */ }
+#scoreboard-area div { /* ... (no change) ... */ }
+#scoreboard-area span[id^="score-player"] { /* ... (no change) ... */ }
+#scoreboard-area span[id$="-value"] { /* ... (no change) ... */ }
+body.config-collapsed #game-board { /* ... (no change) ... */ }
+body.config-collapsed #status-message { /* ... (no change) ... */ }
+body.config-collapsed #main-game-layout { /* ... (no change) ... */ }
+@media (max-width: 768px) { /* ... (no change) ... */ }
+@media (max-width: 480px) { /* ... (no change) ... */ }
+
+
+/* --- Win Message Animation Styles --- */
+#win-message-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Above everything */
+    opacity: 0; /* Start hidden, JS will make it visible */
+    pointer-events: none; /* Start non-interactive */
+    animation: overlay-fade-in 0.5s forwards; /* Separate fade-in for overlay */
+}
+
+#win-message-overlay.visible { /* Class to be added by JS */
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+#win-text {
+    font-size: clamp(30px, 8vw, 100px); /* Responsive font size */
+    font-weight: bold;
+    text-align: center;
+    color: transparent; /* Required for background-clip */
+    background: linear-gradient(45deg, #ff00ff, #00ff00, #ffff00, #00ffff, #ff0000, #ff00ff);
+    background-size: 400% 400%; /* For animated gradient */
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: 
+        0 0 5px rgba(255, 255, 255, 0.7),
+        0 0 10px rgba(255, 0, 255, 0.5),
+        0 0 15px rgba(0, 255, 255, 0.5),
+        0 0 20px rgba(255, 255, 0, 0.5);
+    /* Animation will be applied by JS to allow re-triggering */
+    /* animation: fireworks-text-animation 5s forwards; */
+    opacity: 0; /* Start hidden until animation begins */
+}
+
+@keyframes overlay-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+@keyframes fireworks-text-animation {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(60px) rotateZ(-45deg);
+        letter-spacing: -0.1em;
+    }
+    20% { /* Explosion and main appearance */
+        opacity: 1;
+        transform: scale(1.1) translateY(0px) rotateZ(5deg);
+        letter-spacing: 0.05em;
+        background-position: 0% 50%;
+         text-shadow: 
+            0 0 8px rgba(255, 255, 255, 0.8),
+            0 0 15px rgba(255, 0, 255, 0.7),
+            0 0 25px rgba(0, 255, 255, 0.7),
+            0 0 35px rgba(255, 255, 0, 0.7);
+    }
+    25% { /* Settle */
+        transform: scale(1) rotateZ(-2deg);
+        letter-spacing: 0em;
+    }
+    /* Hold and shimmer for ~3 seconds (25% to 85% of 5s animation = 60% * 5s = 3s) */
+    35% {
+        transform: scale(1.03) rotateZ(2deg) skewX(-3deg);
+        background-position: 50% 100%;
+         text-shadow: 
+            0 0 6px rgba(255, 255, 255, 0.7),
+            0 0 12px rgba(0, 255, 0, 0.6),
+            0 0 20px rgba(255, 0, 0, 0.6),
+            0 0 30px rgba(0, 0, 255, 0.6);
+    }
+    50% {
+        transform: scale(0.97) rotateZ(-2deg) skewX(3deg);
+        background-position: 100% 50%;
+    }
+    65% {
+        transform: scale(1.02) rotateZ(1deg) skewX(-2deg);
+        background-position: 50% 0%;
+         text-shadow: 
+            0 0 8px rgba(255, 255, 255, 0.8),
+            0 0 15px rgba(255, 165, 0, 0.7), /* Orange */
+            0 0 25px rgba(128, 0, 128, 0.7), /* Purple */
+            0 0 35px rgba(0, 255, 0, 0.7);   /* Green */
+    }
+    80% { /* Settle before fade */
+        opacity: 1;
+        transform: scale(1) rotateZ(0deg) skewX(0deg);
+        background-position: 0% 50%;
+        letter-spacing: 0em;
+    }
+    100% { /* Fade out */
+        opacity: 0;
+        transform: scale(0.7) translateY(-60px) rotateZ(45deg);
+        letter-spacing: 0.1em;
+    }
+}
+#toggle-config-button {
+    padding: 8px 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+#toggle-config-button:hover {
+    background-color: #5a6268;
+}
+
+.player-setup-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 780px;
+    overflow: hidden;
+    max-height: 1200px; /* Increased slightly for name input */
+    opacity: 1;
+    transition: max-height 0.4s ease-in-out, opacity 0.3s 0.1s ease-in-out, margin-bottom 0.4s ease-in-out, padding 0.4s ease-in-out;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.player-setup-container.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.player-setup {
+    border: 1px solid #dee2e6;
+    padding: 20px;
+    width: 350px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.player-setup h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #495057;
+    font-size: 1.3em;
+}
+.player-name-input {
+    width: calc(100% - 16px); /* Full width of parent minus padding */
+    padding: 8px;
+    margin-bottom: 10px; /* Space below name input field */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    font-size: 1em;
+}
+.player-setup .image-controls,
+.player-setup .sound-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+}
+.player-setup label {
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.image-controls .image-input-options {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.image-input-options .image-input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+.image-input-options span {
+    font-style: italic;
+    color: #6c757d;
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+.image-input-options .take-photo-btn {
+    padding: 6px 10px;
+    font-size: 0.9em;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.image-input-options .take-photo-btn:hover {
+    background-color: #dee2e6;
+}
+
+.record-button, .stop-record-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+.record-button:hover, .stop-record-button:hover {
+    background-color: #dee2e6;
+}
+.stop-record-button {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.stop-record-button:hover {
+    background-color: #f1b0b7;
+}
+
+.preview-img {
+    max-width: 80px;
+    max-height: 80px;
+    border: 1px solid #dee2e6;
+    object-fit: cover;
+    align-self: center;
+    margin-top: 5px;
+    display: block;
+    background-color: #e9ecef;
+    border-radius: 4px;
+}
+.preview-img[src=""], .preview-img:not([src]) {
+    display: none;
+}
+.record-status {
+    font-style: italic;
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-top: 5px;
+    text-align: center;
+    min-height: 1.2em;
+}
+.playback-audio {
+    margin-top: 8px;
+    width: 100%;
+    height: 40px;
+}
+.playback-audio:not([src]) {
+    display: none;
+}
+
+/* Modal Styles */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
+.modal-content { background-color: #fefefe; margin: auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 8px; position: relative; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.close-camera-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 32px; font-weight: bold; line-height: 1; cursor: pointer; }
+.close-camera-btn:hover, .close-camera-btn:focus { color: black; text-decoration: none; }
+#camera-video-stream { width: 100%; max-height: 300px; border: 1px solid #ccc; margin-bottom: 15px; background-color: #333; border-radius: 4px; display: block; }
+#capture-image-btn { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; transition: background-color 0.2s; }
+#capture-image-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+#capture-image-btn:hover:not(:disabled) { background-color: #218838; }
+.camera-error-msg { margin-top: 10px; font-size: 0.9em; color: #dc3545; }
+
+/* --- Main Game Layout --- */
+#main-game-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 25px; /* Adjusted gap */
+    width: 100%;
+    max-width: 850px; /* Adjusted max-width */
+    margin-top: 20px;
+    padding: 0 10px; /* Padding for smaller screens */
+    box-sizing: border-box;
+}
+
+#game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0; /* Prevent game area from shrinking too much */
+}
+
+#status-message {
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #2c3e50;
+    text-align: center;
+    min-height: 1.5em;
+    transition: font-size 0.3s ease-in-out;
+    width: 100%; /* Ensure it takes width if board is small */
+    max-width: 330px; /* Corresponds to 3x100px cells + gaps/borders */
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+    border: 3px solid #555;
+    background-color: #e9ecef;
+    padding: 5px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease-in-out;
+}
+.cell {
+    width: 100%; height: 100%; background-color: #fff; border: 1px solid #ced4da; display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; border-radius: 4px; transition: background-color 0.2s;
+}
+.cell:hover { background-color: #f0f0f0; }
+.cell img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 4px; }
+
+#reset-button {
+    padding: 12px 28px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+#reset-button:hover { background-color: #0056b3; }
+
+#scoreboard-area {
+    width: 200px; /* Adjusted width */
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    align-self: flex-start;
+    flex-shrink: 0; /* Prevent scoreboard from shrinking */
+}
+#scoreboard-area h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #343a40;
+}
+#scoreboard-area div {
+    margin-bottom: 8px;
+    font-size: 1.05em; /* Adjusted size */
+    word-break: break-word; /* Allow long names to wrap */
+}
+#scoreboard-area span[id^="score-player"] {
+    font-weight: bold;
+}
+#scoreboard-area span[id$="-value"] {
+    color: #007bff;
+    margin-left: 5px;
+}
+
+
+/* --- Collapsed Config State --- */
+body.config-collapsed #game-board {
+    grid-template-columns: repeat(3, min(25vw, 130px)); /* Adjusted size */
+    grid-template-rows: repeat(3, min(25vw, 130px));
+    gap: 7px; /* Adjusted gap */
+}
+body.config-collapsed #status-message {
+    font-size: 1.4em; /* Adjusted size */
+    max-width: calc(3 * min(25vw, 130px) + 2 * 7px + 6px); /* Match board width */
+}
+body.config-collapsed #main-game-layout {
+    margin-top: max(3vh, 15px);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    #main-game-layout {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    #scoreboard-area {
+        width: 90%;
+        max-width: 350px;
+        align-self: center;
+    }
+    .player-setup {
+        width: 90%;
+        max-width: 400px;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    body.config-collapsed #game-board {
+        grid-template-columns: repeat(3, min(28vw, 110px)); /* Adjusted */
+        grid-template-rows: repeat(3, min(28vw, 110px));
+    }
+    body.config-collapsed #status-message {
+       max-width: calc(3 * min(28vw, 110px) + 2 * 7px + 6px);
+    }
+}
+@media (max-width: 480px) {
+    #game-board {
+        grid-template-columns: repeat(3, 75px); /* Adjusted */
+        grid-template-rows: repeat(3, 75px);
+    }
+    #status-message { max-width: calc(3 * 75px + 2 * 5px + 6px); }
+    body.config-collapsed #game-board {
+        grid-template-columns: repeat(3, min(28vw, 90px)); /* Adjusted */
+        grid-template-rows: repeat(3, min(28vw, 90px));
+    }
+    body.config-collapsed #status-message {
+       max-width: calc(3 * min(28vw, 90px) + 2 * 7px + 6px);
+    }
+     .player-setup h2 {
+        font-size: 1.2em;
+    }
+    #reset-button {
+        padding: 10px 20px;
+    }
+    #main-game-layout { max-width: 100%; }
+}
