@@ -362,35 +362,36 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 	// --- END MODIFIED: playWinSound function ---
 
-	// --- MODIFIED: showWinAnimation function ---
-	function showWinAnimation(winningPlayerName) {
-		winTextElement.textContent = `${winningPlayerName} Wins!`;
+	// --- MODIFIED/RENAMED: showEndGameAnimation function ---
+	function showEndGameAnimation(displayText, isWinAnimation) { // Added isWinAnimation flag
+		winTextElement.textContent = displayText;
 		winMessageOverlay.style.display = 'flex';
-		winMessageOverlay.classList.add('visible'); // For CSS opacity transition on overlay
-		winTextElement.style.animation = 'none';    // Reset animation
-		void winTextElement.offsetWidth;           // Trigger reflow to restart animation
+		winMessageOverlay.classList.add('visible');
+		winTextElement.style.animation = 'none';
+		void winTextElement.offsetWidth;
+
+		// Use the same fireworks animation for both win and draw, or create a different one for draw
 		winTextElement.style.animation = 'fireworks-text-animation 5s forwards';
 
-		statusMessage.textContent = ""; // Clear normal status during animation
+		statusMessage.textContent = "";
 
-		// Clear any previous timeout to prevent multiple resets if called rapidly
 		if (winAnimationTimeout) clearTimeout(winAnimationTimeout);
 
-		const totalVisualDisplayTime = 5000; // This should match the CSS 'fireworks-text-animation' duration
+		const totalVisualDisplayTime = 5000; // Match CSS animation duration
 
 		winAnimationTimeout = setTimeout(() => {
 			winMessageOverlay.style.display = 'none';
 			winMessageOverlay.classList.remove('visible');
-			// The winTextElement.style.animation = ''; will be handled by resetGame
-			if (!gameActive) { // Only reset if game wasn't already reset by a manual button click
+			// winTextElement.style.animation = ''; // Handled by resetGame
+			if (!gameActive) {
 				resetGame();
 			}
 		}, totalVisualDisplayTime);
 	}
-	// --- END MODIFIED: showWinAnimation function ---
+	// --- END MODIFIED/RENAMED: showEndGameAnimation function ---
 	
 
-	// --- MODIFIED: checkResult function (win condition block) ---
+	// --- MODIFIED: checkResult function ---
 		function checkResult() {
 			let roundWon = false;
 			let winningPlayer = -1;
@@ -411,22 +412,23 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (roundWon) {
 				gameActive = false;
 				const winnerName = playerNames[winningPlayer];
-				playWinSound(winningPlayer, winnerName); // Call without the reset callback
+				playWinSound(winningPlayer, winnerName); // Plays custom sound then "[Winner] wins"
 				if (winningPlayer === 0) scorePlayer1++; else scorePlayer2++;
 				updateScoreboardDisplay();
 				startingPlayerForNextGame = startingPlayerForNextGame === 0 ? 1 : 0;
-				showWinAnimation(winnerName); // This sets the timeout that will eventually reset the game
+				showEndGameAnimation(`${winnerName} Wins!`, true); // Use new generic animation function
 				return;
 			}
 
 			if (!boardState.includes(null) && gameActive) { // Draw
-				statusMessage.textContent = "It's a Draw!";
 				gameActive = false;
 				startingPlayerForNextGame = startingPlayerForNextGame === 0 ? 1 : 0;
-				if (winAnimationTimeout) clearTimeout(winAnimationTimeout); // Clear any win animation timeout
-				winAnimationTimeout = setTimeout(() => { // Set a specific timeout for draw
-					if (!gameActive) resetGame();
-				}, 2000);
+
+				const drawSpeechMessage = `It's a draw. Well done ${playerNames[0]} and ${playerNames[1]}`;
+				speakText(drawSpeechMessage); // Speak the draw message
+
+				showEndGameAnimation("It's a Draw!", false); // Show visual "It's a Draw!"
+				// The timeout for reset is now handled by showEndGameAnimation
 				return;
 			}
 
@@ -439,19 +441,22 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.textContent = `${playerNames[currentPlayer]}'s Turn`;
     }
 
-    function resetGame() {
-        if (winAnimationTimeout) {
-            clearTimeout(winAnimationTimeout);
-            winMessageOverlay.style.display = 'none';
-            winMessageOverlay.classList.remove('visible');
-            winTextElement.style.animation = '';
-        }
-        boardState.fill(null);
-        gameActive = true;
-        currentPlayer = startingPlayerForNextGame;
-        cells.forEach(cell => cell.innerHTML = '');
-        updateGameReadyStatus();
-    }
+	// --- resetGame function (ensure it correctly cleans up animation) ---
+	function resetGame() {
+		if (winAnimationTimeout) {
+			clearTimeout(winAnimationTimeout);
+		}
+		winMessageOverlay.style.display = 'none';
+		winMessageOverlay.classList.remove('visible');
+		winTextElement.style.animation = ''; // Crucial to reset animation for the next win/draw
+
+		boardState.fill(null);
+		gameActive = true;
+		currentPlayer = startingPlayerForNextGame;
+		cells.forEach(cell => cell.innerHTML = '');
+		updateGameReadyStatus();
+	}
+	// --- END resetGame function ---
 
     // --- Event Listeners & Initial Setup ---
     cells.forEach(cell => cell.addEventListener('click', handleCellClick));
