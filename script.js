@@ -62,24 +62,59 @@ document.addEventListener('DOMContentLoaded', () => {
         [0, 4, 8], [2, 4, 6]
     ];
 
-    // --- Player Name Handling ---
-    playerNameInputs.forEach((input, index) => {
-        input.addEventListener('input', (e) => {
-            playerNames[index] = e.target.value.trim() || `Player ${index + 1}`;
-            if (playerNames[index].length > 15) playerNames[index] = playerNames[index].substring(0,15);
-            e.target.value = playerNames[index];
-            updateScoreboardDisplay();
-            updateGameReadyStatus();
-        });
-    });
+	// --- Player Name Handling ---
+	playerNameInputs.forEach((input, index) => {
+		const defaultName = `Player ${index + 1}`;
 
-    // --- Scoreboard ---
-    function updateScoreboardDisplay() {
-        scorePlayer1NameDisplay.textContent = playerNames[0];
-        scorePlayer2NameDisplay.textContent = playerNames[1];
-        scorePlayer1ValueDisplay.textContent = scorePlayer1;
-        scorePlayer2ValueDisplay.textContent = scorePlayer2;
-    }
+		// 1. Focus Event: Clear default text if present
+		input.addEventListener('focus', () => {
+			if (input.value === defaultName) {
+				input.value = '';
+			}
+		});
+
+		// 2. Input Event: Update live, handle maxlength, update canonical name
+		input.addEventListener('input', () => {
+			let typedValue = input.value;
+
+			// Enforce maxlength in JS (browser maxlength attribute should also work)
+			if (typedValue.length > 20) {
+				typedValue = typedValue.substring(0, 20);
+				input.value = typedValue; // Update the input field if truncated
+			}
+
+			// Update the canonical player name (trimmed).
+			// It can be temporarily empty if the user deletes everything.
+			playerNames[index] = typedValue.trim();
+
+			updateScoreboardDisplay(); // Scoreboard will show default if playerNames[index] is empty
+			updateGameReadyStatus();   // Status messages will also use default if empty
+		});
+
+		// 3. Blur Event: Reset to default if empty, or set to trimmed value
+		input.addEventListener('blur', () => {
+			let finalValue = input.value.trim(); // Get the trimmed value
+
+			if (finalValue === '') {
+				finalValue = defaultName; // Reset to default if it was left empty
+			}
+			// Set the input field to the canonical name (either trimmed user input or default)
+			input.value = finalValue;
+			playerNames[index] = finalValue; // Ensure playerNames array matches the canonical name
+
+			updateScoreboardDisplay();
+			updateGameReadyStatus();
+		});
+	});
+
+	// --- Scoreboard ---
+	function updateScoreboardDisplay() {
+		// Display the stored name, or the default if the stored name is currently empty
+		scorePlayer1NameDisplay.textContent = playerNames[0] || `Player 1`;
+		scorePlayer2NameDisplay.textContent = playerNames[1] || `Player 2`;
+		scorePlayer1ValueDisplay.textContent = scorePlayer1;
+		scorePlayer2ValueDisplay.textContent = scorePlayer2;
+	}
 
     // --- Collapsible Config ---
     toggleConfigButton.addEventListener('click', () => {
@@ -230,28 +265,41 @@ document.addEventListener('DOMContentLoaded', () => {
     recordButtons.forEach(button => button.addEventListener('click', (e) => startRecording(parseInt(e.target.dataset.player))));
     stopRecordButtons.forEach(button => button.addEventListener('click', (e) => stopRecording(parseInt(e.target.dataset.player))));
 
-    // --- Game Logic ---
-    function updateGameReadyStatus() {
-        const imagesReady = playerImages[0] && playerImages[1];
+	// --- Game Logic ---
+	function updateGameReadyStatus() {
+		const imagesReady = playerImages[0] && playerImages[1];
+		// Sound is optional.
+		// For names, we check if the canonical name is empty (after trim).
+		// If it is, it implies the user hasn't set a valid name yet (or deleted it).
+		const p1NameSet = playerNames[0] && playerNames[0] !== '';
+		const p2NameSet = playerNames[1] && playerNames[1] !== '';
 
-        if (gameActive) {
-            if (imagesReady) {
-                statusMessage.textContent = `${playerNames[currentPlayer]}'s Turn`;
-            } else {
-                let missing = [];
-                if (!playerImages[0]) missing.push("P1 Image");
-                if (!playerImages[1]) missing.push("P2 Image");
-                // Sound is optional, so not listed as missing.
-                // Names are optional, could add logic to prompt if default.
-                if (missing.length > 0) {
-                    statusMessage.textContent = `Waiting for: ${missing.join(', ')}`;
-                } else {
-                    statusMessage.textContent = "Ready to play!"; // Should be covered by imagesReady
-                }
-            }
-        }
-        // If !gameActive, status message handled by win animation or draw message
-    }
+
+		if (gameActive) {
+			if (imagesReady && p1NameSet && p2NameSet) { // All critical setup done
+				statusMessage.textContent = `${playerNames[currentPlayer]}'s Turn`;
+			} else {
+				let missing = [];
+				if (!p1NameSet) missing.push("P1 Name"); // Prompt if name is effectively empty
+				if (!playerImages[0]) missing.push("P1 Image");
+				// Sound is optional: if (!playerAudioBlobs[0]) missing.push("P1 Sound");
+
+				if (!p2NameSet) missing.push("P2 Name"); // Prompt if name is effectively empty
+				if (!playerImages[1]) missing.push("P2 Image");
+				// Sound is optional: if (!playerAudioBlobs[1]) missing.push("P2 Sound");
+
+
+				if (missing.length > 0) {
+					statusMessage.textContent = `Waiting for: ${missing.join(', ')}`;
+				} else {
+					// This case should ideally be covered by the first `if`
+					// but as a fallback if all items are technically "set" but names might be default.
+					 statusMessage.textContent = `${playerNames[currentPlayer] || `Player ${currentPlayer + 1}`}'s Turn`;
+				}
+			}
+		}
+		// If !gameActive, status message handled by win/draw animation
+	}
 
     function handleCellClick(event) {
         const clickedCell = event.target.closest('.cell');
@@ -436,12 +484,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	// --- END MODIFIED: checkResult function ---
 
-    function switchPlayer() {
-        currentPlayer = currentPlayer === 0 ? 1 : 0;
-        statusMessage.textContent = `${playerNames[currentPlayer]}'s Turn`;
-    }
+	// In the switchPlayer function, use fallback for playerNames
+	function switchPlayer() {
+		currentPlayer = currentPlayer === 0 ? 1 : 0;
+		statusMessage.textContent = `${playerNames[currentPlayer] || `Player ${currentPlayer + 1}`}'s Turn`;
+	}
 
-	// --- resetGame function (ensure it correctly cleans up animation) ---
+	// --- resetGame function (ensure it correctly cleans up animation AND clears board) ---
 	function resetGame() {
 		if (winAnimationTimeout) {
 			clearTimeout(winAnimationTimeout);
@@ -453,8 +502,31 @@ document.addEventListener('DOMContentLoaded', () => {
 		boardState.fill(null);
 		gameActive = true;
 		currentPlayer = startingPlayerForNextGame;
-		cells.forEach(cell => cell.innerHTML = '');
-		updateGameReadyStatus();
+
+		// --- THIS LINE WAS MISSING ---
+		cells.forEach(cell => cell.innerHTML = ''); // Clear images from the board cells
+		// --- END OF MISSING LINE ---
+
+		// Re-initialize playerNames from input fields *before* calling updateGameReadyStatus,
+		// as updateGameReadyStatus relies on the correct playerNames.
+		playerNameInputs.forEach((input, index) => {
+			// If the input is currently empty (e.g., user deleted default during focus),
+			// and then a game ends and resetGame is called, we need to ensure
+			// playerNames reflects the default if the input field is still showing that default (due to no blur).
+			// However, the blur event should have already set it. This is more of a safety.
+			// The main thing is that playerNames[] needs to be accurate *before* updateGameReadyStatus.
+			const defaultName = `Player ${index + 1}`;
+			let currentInputValue = input.value.trim();
+			if (currentInputValue === '') { // If input is actually empty (e.g. user focused, deleted, then game ended)
+				playerNames[index] = defaultName; // Use default for playerNames array
+				// input.value = defaultName; // Optionally also reset the visible input text if it was empty
+			} else {
+				playerNames[index] = currentInputValue;
+			}
+		});
+
+		updateScoreboardDisplay(); // Update scoreboard with current names
+		updateGameReadyStatus();   // This will set the correct "Player X's Turn" message
 	}
 	// --- END resetGame function ---
 
