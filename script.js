@@ -851,5 +851,5 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = ""; img.style.display = 'none';
         }
     });
-    setGameMode('twoPlayer');
+    setGameMode('onePlayer');
 });
