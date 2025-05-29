@@ -44,6 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const winMessageOverlay = document.getElementById('win-message-overlay');
     const winTextElement = document.getElementById('win-text');
+	
+	// --- Media State Variables ---
+	let mediaRecorders = [null, null];      // <<< MUST BE HERE
+	let audioChunks = [[], []];             // <<< MUST BE HERE
+	let currentCameraStream = null;
+	let activePlayerForCamera = null;
 
     // --- Game State Variables ---
     let gameMode = 'twoPlayer';
