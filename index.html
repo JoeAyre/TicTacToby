@@ -9,12 +9,21 @@
 <body>
     <h1>Tic Tac Toby! (and Jude, too)</h1><!DOCTYPE html>
 
+    <div id="game-mode-selection">
+        <h2>Choose Game Mode:</h2>
+        <button id="one-player-mode-btn" class="mode-button">One Player</button>
+        <button id="two-player-mode-btn" class="mode-button active">Two Player</button>
+    </div>
+
+    
+
     <div class="player-setup-container">
-        <div class="player-setup" id="player1-setup">
-            <h2>Player 1 Setup</h2>
+        <!-- Player 1 Setup (Always Visible after mode selection) -->
+        <div class="player-setup" id="player1-setup-area">
+            <h2 id="player1-setup-title">Player 1 Setup</h2>
             <div>
                 <label for="player1-name">Name:</label>
-                <input type="text" id="player1-name" class="player-name-input" data-player="0" value="Player 1" maxlength="25">
+                <input type="text" id="player1-name" class="player-name-input" data-player="0" value="Player 1" maxlength="20">
             </div>
             <div class="image-controls">
                 <label>Image:</label>
@@ -34,11 +43,12 @@
             </div>
         </div>
 
-        <div class="player-setup" id="player2-setup">
+        <!-- Player 2 Setup (For Two Player Mode) -->
+        <div class="player-setup" id="player2-setup-area">
             <h2>Player 2 Setup</h2>
             <div>
                 <label for="player2-name">Name:</label>
-                <input type="text" id="player2-name" class="player-name-input" data-player="1" value="Player 2" maxlength="25">
+                <input type="text" id="player2-name" class="player-name-input" data-player="1" value="Player 2" maxlength="20">
             </div>
             <div class="image-controls">
                 <label>Image:</label>
@@ -57,9 +67,29 @@
                 <audio class="playback-audio" data-player="1" controls style="display:none;"></audio>
             </div>
         </div>
+
+        <!-- AI Opponent Selection (For One Player Mode) -->
+        <div class="player-setup" id="ai-opponent-selection-area" style="display: none;">
+            <h2>Choose Your Opponent:</h2>
+            <div class="ai-options-container">
+                <div class="ai-option" data-ai="simple-simon">
+                    <img src="SS.png" alt="Simple Simon" class="ai-image-preview">
+                    <span>Simple Simon</span> (Easy)
+                </div>
+                <div class="ai-option" data-ai="average-joe">
+                    <img src="AJ.png" alt="Average Joe" class="ai-image-preview">
+                    <span>Average Joe</span> (Medium)
+                </div>
+                <div class="ai-option" data-ai="brainy-brian">
+                    <img src="BB.png" alt="Brainy Brian" class="ai-image-preview">
+                    <span>Brainy Brian</span> (Hard)
+                </div>
+            </div>
+            <p id="ai-selected-message" style="text-align:center; margin-top:10px; font-style:italic;"></p>
+        </div>
     </div>
 	<button id="toggle-config-button">Hide Setup</button>
-    <!-- Camera Modal -->
+    <!-- Camera Modal (no change) -->
     <div id="camera-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close-camera-btn">×</span>
@@ -71,10 +101,10 @@
         </div>
     </div>
 
-    <!-- Main Game Layout Wrapper -->
+    <!-- Main Game Layout Wrapper (no change) -->
     <div id="main-game-layout">
         <div id="game-area">
-            <div id="status-message">Enter names, select images, and start playing!</div>
+            <div id="status-message">Choose game mode to start.</div>
             <div id="game-board">
                 <div class="cell" data-index="0"></div> <div class="cell" data-index="1"></div> <div class="cell" data-index="2"></div>
                 <div class="cell" data-index="3"></div> <div class="cell" data-index="4"></div> <div class="cell" data-index="5"></div>
@@ -89,7 +119,7 @@
         </div>
     </div>
 
-    <!-- Win Message Overlay -->
+    <!-- Win Message Overlay (no change) -->
     <div id="win-message-overlay" style="display: none;">
         <div id="win-text"></div>
     </div>
