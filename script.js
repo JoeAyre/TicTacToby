@@ -589,31 +589,81 @@ document.addEventListener('DOMContentLoaded', () => {
         cells.forEach(cell => cell.innerHTML = '');
     }
 
-	function resetGame() { /* ... (full function from previous script, includes brain fart reset for hard AI) ... */
-        resetGameLogicOnly();
-        playerNames[0] = playerNameInputs[0].value.trim() || "Player 1";
-        if (gameMode === 'onePlayer') {
-            if (selectedAI && aiData[selectedAI]) {
-                const ai = aiData[selectedAI];
-                playerNames[1] = ai.name; playerImages[1] = ai.image; playerAudioURLs[1] = ai.sound;
-                previewImages[1].src = ai.image; previewImages[1].style.display = 'block';
-                if (ai.level === 'hard') {
-                    const brainFartChance = 0.25; willBrainFartThisGame = Math.random() < brainFartChance;
-                    aiMovesMadeThisBrainFartGame = 0;
-                    if (willBrainFartThisGame) console.log(`${ai.name}: Might have a brain fart this game!`);
-                } else { willBrainFartThisGame = false; }
-            } else {
-                playerNames[1] = "Computer"; playerImages[1] = null; playerAudioURLs[1] = null;
-                previewImages[1].src = "#"; previewImages[1].style.display = 'none';
-                willBrainFartThisGame = false; selectedAI = null;
-            }
-        } else {
-            playerNames[1] = playerNameInputs[1].value.trim() || "Player 2";
-            willBrainFartThisGame = false;
-        }
-        updateScoreboardDisplay(); updateGameReadyStatus();
-        if (gameMode === 'onePlayer' && currentPlayer === 1 && gameActive && selectedAI) computerMove();
-    }
+	// --- resetGame function (Plays brainfart.mp3 if applicable) ---
+	function resetGame() {
+		if (winAnimationTimeout) { // Clear any existing win/draw animation timeout
+			clearTimeout(winAnimationTimeout);
+		}
+		// Explicitly hide overlay and clear text animation style on any reset
+		winMessageOverlay.style.display = 'none';
+		winMessageOverlay.classList.remove('visible');
+		winTextElement.style.animation = ''; // Crucial to reset animation for the next win/draw
+
+		boardState.fill(null);
+		gameActive = true;
+		// startingPlayerForNextGame is determined by the outcome of the previous game
+		currentPlayer = startingPlayerForNextGame;
+		cells.forEach(cell => cell.innerHTML = ''); // Clear the board visuals
+
+		// Update player names based on current inputs/selections
+		playerNames[0] = playerNameInputs[0].value.trim() || "Player 1";
+		let playBrainFartSoundThisGame = false; // Flag to play the sound after other setup
+
+		if (gameMode === 'onePlayer') {
+			if (selectedAI && aiData[selectedAI]) { // Check if an AI is selected and data exists
+				const ai = aiData[selectedAI];
+				playerNames[1] = ai.name;
+				playerImages[1] = ai.image; // Set AI image path
+				playerAudioURLs[1] = ai.sound; // Set AI sound path
+				previewImages[1].src = ai.image; // Update preview for AI
+				previewImages[1].style.display = 'block';
+
+				// Determine if this new game against a 'hard' AI will have a brain fart
+				if (ai.level === 'hard') {
+					const brainFartChance = 0.25; // 25% chance
+					willBrainFartThisGame = Math.random() < brainFartChance;
+					aiMovesMadeThisBrainFartGame = 0; // Reset counter for this specific game
+					if (willBrainFartThisGame) {
+						console.log(`${ai.name}: This game WILL have a brain fart!`);
+						playBrainFartSoundThisGame = true; // Set flag to play the sound
+					}
+				} else {
+					willBrainFartThisGame = false; // Not a 'hard' AI, or not flagged for this game
+				}
+			} else { // No AI selected in one-player mode (should ideally not happen if selection is forced)
+				playerNames[1] = "Computer";
+				playerImages[1] = null;
+				playerAudioURLs[1] = null;
+				previewImages[1].src = "#";
+				previewImages[1].style.display = 'none';
+				willBrainFartThisGame = false;
+				selectedAI = null; // Ensure selectedAI is cleared if it was invalid or deselected
+			}
+		} else { // twoPlayer mode
+			playerNames[1] = playerNameInputs[1].value.trim() || "Player 2";
+			willBrainFartThisGame = false; // No brain farts in two-player mode
+		}
+
+		updateScoreboardDisplay(); // Update scoreboard with current names
+		updateGameReadyStatus();   // This will set the correct "Player X's Turn" message
+
+		// Play the brain fart sound if it was flagged, after UI updates
+		if (playBrainFartSoundThisGame) {
+			// Delay slightly so it doesn't overlap too much with other potential game start sounds
+			// or clash with the immediate UI update.
+			setTimeout(() => {
+				const fartSound = new Audio('brainfart.mp3'); // Assuming brainfart.mp3 is in the root
+				fartSound.play().catch(e => console.error("Error playing brainfart.mp3:", e));
+			}, 200); // 200ms delay, adjust as needed
+		}
+
+		// If it's AI's turn to start in one-player mode, make its move
+		// This happens after the potential brain fart sound is scheduled to play
+		if (gameMode === 'onePlayer' && currentPlayer === 1 && gameActive && selectedAI) {
+			computerMove();
+		}
+	}
+	// --- END resetGame function ---
 
     // --- Event Listeners & Initial Setup ---
     cells.forEach(cell => cell.addEventListener('click', handleCellClick));
