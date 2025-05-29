@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toby!</title>
+    <title>Image & Sound Tic-Tac-Toe</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Tic Tac Toby! (and Jude, too)</h1><!DOCTYPE html>
+    <h1>Image & Sound Tic-Tac-Toe</h1>
 
     <div id="game-mode-selection">
         <h2>Choose Game Mode:</h2>
@@ -15,7 +15,7 @@
         <button id="two-player-mode-btn" class="mode-button active">Two Player</button>
     </div>
 
-    
+    <button id="toggle-config-button">Hide Setup</button>
 
     <div class="player-setup-container">
         <!-- Player 1 Setup (Always Visible after mode selection) -->
@@ -81,15 +81,27 @@
                     <span>Average Joe</span> (Medium)
                 </div>
                 <div class="ai-option" data-ai="brainy-brian">
-                    <img src="BB.png" alt="Brainy Brian" class="ai-image-preview">
+                    <img src="BB_male.png" alt="Brainy Brian" class="ai-image-preview">
                     <span>Brainy Brian</span> (Hard)
+                </div>
+                <div class="ai-option" data-ai="baby-becky">
+                    <img src="BB_female.png" alt="Baby Becky" class="ai-image-preview">
+                    <span>Baby Becky</span> (Easy)
+                </div>
+                <div class="ai-option" data-ai="normal-nancy">
+                    <img src="NN.png" alt="Normal Nancy" class="ai-image-preview">
+                    <span>Normal Nancy</span> (Medium)
+                </div>
+                <div class="ai-option" data-ai="clever-chloe">
+                    <img src="CC.png" alt="Clever Chloe" class="ai-image-preview">
+                    <span>Clever Chloe</span> (Hard)
                 </div>
             </div>
             <p id="ai-selected-message" style="text-align:center; margin-top:10px; font-style:italic;"></p>
         </div>
     </div>
-	<button id="toggle-config-button">Hide Setup</button>
-    <!-- Camera Modal (no change) -->
+
+    <!-- Camera Modal -->
     <div id="camera-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close-camera-btn">×</span>
@@ -101,7 +113,7 @@
         </div>
     </div>
 
-    <!-- Main Game Layout Wrapper (no change) -->
+    <!-- Main Game Layout Wrapper -->
     <div id="main-game-layout">
         <div id="game-area">
             <div id="status-message">Choose game mode to start.</div>
@@ -119,7 +131,7 @@
         </div>
     </div>
 
-    <!-- Win Message Overlay (no change) -->
+    <!-- Win Message Overlay -->
     <div id="win-message-overlay" style="display: none;">
         <div id="win-text"></div>
     </div>

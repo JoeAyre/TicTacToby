@@ -72,9 +72,9 @@ h1 {
     justify-content: center;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 780px;
+    max-width: 780px; /* Can be adjusted if 6 AI options make it too wide */
     overflow: hidden;
-    max-height: 1200px;
+    max-height: 1200px; 
     opacity: 1;
     transition: max-height 0.4s ease-in-out, opacity 0.3s 0.1s ease-in-out, margin-bottom 0.4s ease-in-out, padding 0.4s ease-in-out;
     padding-top: 10px;
@@ -88,32 +88,29 @@ h1 {
     padding-bottom: 0;
 }
 
+/* Collapsing Game Mode Selection */
 #game-mode-selection {
-    /* ... your existing styles for #game-mode-selection ... */
-    /* e.g., margin-bottom: 20px; text-align: center; */
-    overflow: hidden; /* Important for max-height transition */
-    max-height: 200px; /* Adjust to fit its content comfortably when visible */
+    overflow: hidden; 
+    max-height: 200px; 
     opacity: 1;
     transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, margin-bottom 0.4s ease-in-out, padding 0.4s ease-in-out;
-    /* Add padding if needed when visible, and transition padding-top/bottom to 0 when collapsed */
-    padding-top: 10px; /* Example padding */
-    padding-bottom: 10px; /* Example padding */
-    margin-bottom: 20px; /* Keep existing margin when visible */
+    padding-top: 10px; 
+    padding-bottom: 10px; 
+    margin-bottom: 20px; 
 }
-
 #game-mode-selection.collapsed {
     max-height: 0;
     opacity: 0;
-    margin-bottom: 0; /* Remove margin when collapsed */
-    padding-top: 0;   /* Remove padding when collapsed */
-    padding-bottom: 0;/* Remove padding when collapsed */
-    /* border: none; -- Optional: if it has a border you want to hide */
+    margin-bottom: 0; 
+    padding-top: 0;  
+    padding-bottom: 0;
 }
 
-.player-setup { /* Common styles for player1-setup-area, player2-setup-area, ai-opponent-selection-area */
+
+.player-setup {
     border: 1px solid #dee2e6;
     padding: 20px;
-    width: 350px;
+    width: 350px; /* This width might need to be adjusted if AI options container gets too wide */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -130,7 +127,7 @@ h1 {
     font-size: 1.3em;
 }
 .player-name-input {
-    width: calc(100% - 16px);
+    width: calc(100% - 16px); /* Account for padding if any directly on input */
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ced4da;
@@ -245,27 +242,28 @@ h1 {
 
 /* AI Opponent Selection Specifics */
 #ai-opponent-selection-area {
-    /* It already inherits .player-setup styles for box appearance */
-    align-items: center; /* Center its internal content */
+    align-items: center;
 }
 .ai-options-container {
     display: flex;
-    justify-content: space-around;
-    gap: 15px;
+    justify-content: space-around; /* This will spread them out, might go to 3 per row if parent is wide enough */
+    gap: 10px; /* Reduced gap slightly */
     width: 100%;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Essential for multiple rows */
 }
 .ai-option {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    padding: 8px; /* Reduced padding slightly */
     border: 2px solid transparent;
     border-radius: 8px;
     cursor: pointer;
     transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     background-color: #f8f9fa;
-    min-width: 100px;
+    min-width: 90px; /* Reduced min-width slightly */
+    flex-basis: calc(33.333% - 10px); /* Aim for 3 per row, adjust gap in calc if gap changes */
+    box-sizing: border-box;
     text-align: center;
 }
 .ai-option:hover {
@@ -277,29 +275,27 @@ h1 {
     box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
 }
 .ai-image-preview {
-    width: 60px;
-    height: 60px;
+    width: 50px; /* Reduced size slightly */
+    height: 50px;
     object-fit: cover;
     border-radius: 50%;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border: 1px solid #dee2e6;
     background-color: #e9ecef;
 }
-.ai-option span { /* First span (AI Name) */
+.ai-option span {
     font-weight: bold;
+    font-size: 0.9em; /* Slightly smaller AI name text */
 }
-.ai-option span + span { /* Second span (Difficulty) - not in current HTML, but if added */
-    font-size: 0.9em;
+/* Text like (Easy), (Medium), (Hard) */
+.ai-option span + br + *:not(img), .ai-option > *:not(img):not(span) {
+    font-size: 0.8em;
     color: #6c757d;
-}
-/* If difficulty text is directly after the first span as plain text */
-.ai-option > span:first-of-type + br + *:not(img) { /* Assuming <br> then difficulty text */
-    font-size: 0.9em;
-    color: #6c757d;
+    margin-top: 2px;
 }
 
 
-/* Modal Styles (no change from previous) */
+/* Modal Styles */
 .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
 .modal-content { background-color: #fefefe; margin: auto; padding: 25px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 8px; position: relative; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 .close-camera-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 32px; font-weight: bold; line-height: 1; cursor: pointer; }
@@ -310,7 +306,7 @@ h1 {
 #capture-image-btn:hover:not(:disabled) { background-color: #218838; }
 .camera-error-msg { margin-top: 10px; font-size: 0.9em; color: #dc3545; }
 
-/* Main Game Layout (no change from previous) */
+/* Main Game Layout */
 #main-game-layout { display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 25px; width: 100%; max-width: 850px; margin-top: 20px; padding: 0 10px; box-sizing: border-box; }
 #game-area { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
 #status-message { margin-bottom: 15px; font-size: 1.3em; font-weight: bold; color: #2c3e50; text-align: center; min-height: 1.5em; transition: font-size 0.3s ease-in-out; width: 100%; max-width: 330px; }
@@ -326,18 +322,17 @@ h1 {
 #scoreboard-area span[id^="score-player"] { font-weight: bold; }
 #scoreboard-area span[id$="-value"] { color: #007bff; margin-left: 5px; }
 
-/* Win Message Animation Styles (no change from previous) */
-#win-message-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none; /* JS controls display:flex */ justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; /* Transition for smooth fade in/out */ }
+/* Win Message Animation Styles */
+#win-message-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; }
 #win-message-overlay.visible { opacity: 1; pointer-events: auto; }
 #win-text { font-size: clamp(30px, 8vw, 100px); font-weight: bold; text-align: center; color: transparent; background: linear-gradient(45deg, #ff00ff, #00ff00, #ffff00, #00ffff, #ff0000, #ff00ff); background-size: 400% 400%; -webkit-background-clip: text; background-clip: text; text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px rgba(255,0,255,0.5), 0 0 15px rgba(0,255,255,0.5), 0 0 20px rgba(255,255,0,0.5); opacity: 0; }
 @keyframes fireworks-text-animation { 0% { opacity: 0; transform: scale(0.3) translateY(60px) rotateZ(-45deg); letter-spacing: -0.1em; } 20% { opacity: 1; transform: scale(1.1) translateY(0px) rotateZ(5deg); letter-spacing: 0.05em; background-position: 0% 50%; text-shadow: 0 0 8px rgba(255,255,255,0.8), 0 0 15px rgba(255,0,255,0.7), 0 0 25px rgba(0,255,255,0.7), 0 0 35px rgba(255,255,0,0.7); } 25% { transform: scale(1) rotateZ(-2deg); letter-spacing: 0em; } 35% { transform: scale(1.03) rotateZ(2deg) skewX(-3deg); background-position: 50% 100%; text-shadow: 0 0 6px rgba(255,255,255,0.7), 0 0 12px rgba(0,255,0,0.6), 0 0 20px rgba(255,0,0,0.6), 0 0 30px rgba(0,0,255,0.6); } 50% { transform: scale(0.97) rotateZ(-2deg) skewX(3deg); background-position: 100% 50%; } 65% { transform: scale(1.02) rotateZ(1deg) skewX(-2deg); background-position: 50% 0%; text-shadow: 0 0 8px rgba(255,255,255,0.8), 0 0 15px rgba(255,165,0,0.7), 0 0 25px rgba(128,0,128,0.7), 0 0 35px rgba(0,255,0,0.7); } 80% { opacity: 1; transform: scale(1) rotateZ(0deg) skewX(0deg); background-position: 0% 50%; letter-spacing: 0em; } 100% { opacity: 0; transform: scale(0.7) translateY(-60px) rotateZ(45deg); letter-spacing: 0.1em; } }
 
-
-/* Collapsed Config State (no change from previous) */
+/* Collapsed Config State */
 body.config-collapsed #game-board { grid-template-columns: repeat(3, min(25vw, 130px)); grid-template-rows: repeat(3, min(25vw, 130px)); gap: 7px; }
 body.config-collapsed #status-message { font-size: 1.4em; max-width: calc(3 * min(25vw, 130px) + 2 * 7px + 6px); }
 body.config-collapsed #main-game-layout { margin-top: max(3vh, 15px); }
 
-/* Responsive Adjustments (no change from previous) */
+/* Responsive Adjustments */
 @media (max-width: 768px) { #main-game-layout { flex-direction: column; align-items: center; gap: 20px; } #scoreboard-area { width: 90%; max-width: 350px; align-self: center; } .player-setup { width: 90%; max-width: 400px; } h1 { font-size: 1.8em; } body.config-collapsed #game-board { grid-template-columns: repeat(3, min(28vw, 110px)); grid-template-rows: repeat(3, min(28vw, 110px)); } body.config-collapsed #status-message { max-width: calc(3 * min(28vw, 110px) + 2 * 7px + 6px); } }
 @media (max-width: 480px) { #game-board { grid-template-columns: repeat(3, 75px); grid-template-rows: repeat(3, 75px); } #status-message { max-width: calc(3 * 75px + 2 * 5px + 6px); } body.config-collapsed #game-board { grid-template-columns: repeat(3, min(28vw, 90px)); grid-template-rows: repeat(3, min(28vw, 90px)); } body.config-collapsed #status-message { max-width: calc(3 * min(28vw, 90px) + 2 * 7px + 6px); } .player-setup h2 { font-size: 1.2em; } #reset-button { padding: 10px 20px; } #main-game-layout { max-width: 100%; } }
